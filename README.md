@@ -13,7 +13,7 @@ Android TTS Helper
 ```dart
   import "package:tts/tts.dart"
 
-  tts.init("en");
+  Tts tts = Tts("en");
   tts.speak("hello");
   
   tts.stop();

@@ -45,12 +45,12 @@ public class TtsPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         if (call.method.equals("init")) {
-            if (call.argument("lang") != null) {
+            if (call.argument("lang") == null) {
                 initTTSEngineer("vi");
             }
-            initTTSEngineer((String) call.argument("lang"));
+            initTTSEngineer(call.argument("lang"));
         } else if (call.method.equals("speak")) {
-            listTalkTask.add((String) call.argument("text"));
+            listTalkTask.add(call.argument("text"));
             playTTS();
         } else if (call.method.equals("stop")) {
             stopVoice();
@@ -79,8 +79,6 @@ public class TtsPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
         isReading = true;
         tts = new TextToSpeech(activity, status -> {
             String text = listTalkTask.poll();
-            // process task
-            String command = "";
             if (status == TextToSpeech.SUCCESS) {
                 if (Build.VERSION.SDK_INT >= 15) {
                     tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
@@ -111,10 +109,12 @@ public class TtsPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
                     params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "");
                     if (tts != null)
                         tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, utteranceId);
+                    isReading = false;
                 } else {
                     HashMap<String, String> map = new HashMap<>();
                     map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "MessageId");
                     if (tts != null) tts.speak(text, TextToSpeech.QUEUE_FLUSH, map);
+                    isReading = false;
                 }
             }
         });
@@ -127,7 +127,7 @@ public class TtsPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
 
     @Override
     public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-
+        this.activity = binding.getActivity();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class TtsPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
 
     @Override
     public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
-        this.activity = binding.getActivity();
+
     }
 
     @Override

@@ -5,15 +5,20 @@ import 'package:flutter/services.dart';
 class Tts {
   static const MethodChannel _channel = MethodChannel('tts');
 
-  static Future<void> init(String lang) async {
-    await _channel.invokeMethod('init', <String, String>{"lang": lang});
+
+  Tts([String? lang]){
+    lang ??= "vi";
+     _channel.invokeMethod('init', <String, String>{"lang": lang});
   }
 
-  static Future<void> speak(String text) async {
+
+  Future<Tts> speak(String text) async {
     await _channel.invokeMethod('speak', <String, String>{"text": text});
+    return this;
   }
 
-  static Future<void> get stop async {
+  Future<Tts> stop() async {
     await _channel.invokeMethod('stop');
+    return this;
   }
 }
