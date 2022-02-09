@@ -47,8 +47,9 @@ public class TtsPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwar
         if (call.method.equals("init")) {
             if (call.argument("lang") == null) {
                 initTTSEngineer("vi");
+            }else{
+                initTTSEngineer(call.argument("lang"));
             }
-            initTTSEngineer(call.argument("lang"));
         } else if (call.method.equals("speak")) {
             listTalkTask.add(call.argument("text"));
             playTTS();
